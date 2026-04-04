@@ -13,7 +13,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>ls.dev</groupId>
+    <groupId>com.sakura</groupId>
     <artifactId>study-life-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -31,7 +31,6 @@
     <!-- 子模块 -->
     <modules>
         <module>study-life-server</module>
-        <module>study-life-web</module>
     </modules>
 
     <!-- 统一管理一些公共依赖版本时可放这里 -->
