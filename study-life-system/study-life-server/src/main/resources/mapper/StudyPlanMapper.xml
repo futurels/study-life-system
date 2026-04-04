@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sakura.studylife.mapper.StudyPlanMapper">
+
+    <resultMap id="StudyPlanResultMap" type="com.sakura.studylife.entity.StudyPlan">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="planTitle" column="plan_title"/>
+        <result property="planContent" column="plan_content"/>
+        <result property="planDate" column="plan_date"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="priorityLevel" column="priority_level"/>
+        <result property="planStatus" column="plan_status"/>
+        <result property="completionTime" column="completion_time"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedFlag" column="deleted_flag"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id,
+        user_id,
+        plan_title,
+        plan_content,
+        plan_date,
+        start_time,
+        end_time,
+        priority_level,
+        plan_status,
+        completion_time,
+        remark,
+        created_at,
+        updated_at,
+        deleted_flag
+    </sql>
+
+    <sql id="QueryConditions">
+        <if test="query.planDate != null">
+            AND plan_date = #{query.planDate}
+        </if>
+        <if test="query.startDate != null">
+            AND plan_date <![CDATA[>=]]> #{query.startDate}
+        </if>
+        <if test="query.endDate != null">
+            AND plan_date <![CDATA[<=]]> #{query.endDate}
+        </if>
+        <if test="query.planStatus != null">
+            AND plan_status = #{query.planStatus}
+        </if>
+        <if test="query.priorityLevel != null">
+            AND priority_level = #{query.priorityLevel}
+        </if>
+    </sql>
+
+    <insert id="insert" parameterType="com.sakura.studylife.entity.StudyPlan" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO study_plan (
+            user_id,
+            plan_title,
+            plan_content,
+            plan_date,
+            start_time,
+            end_time,
+            priority_level,
+            plan_status,
+            completion_time,
+            remark,
+            created_at,
+            updated_at,
+            deleted_flag
+        ) VALUES (
+            #{userId},
+            #{planTitle},
+            #{planContent},
+            #{planDate},
+            #{startTime},
+            #{endTime},
+            #{priorityLevel},
+            #{planStatus},
+            #{completionTime},
+            #{remark},
+            #{createdAt},
+            #{updatedAt},
+            #{deletedFlag}
+        )
+    </insert>
+
+    <select id="selectUserIdById" resultType="java.lang.Long">
+        SELECT user_id
+        FROM study_plan
+        WHERE id = #{id}
+          AND deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectByIdAndUserId" resultMap="StudyPlanResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM study_plan
+        WHERE id = #{id}
+          AND user_id = #{userId}
+          AND deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="countByQuery" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM study_plan
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+        <include refid="QueryConditions"/>
+    </select>
+
+    <select id="selectPageByQuery" resultMap="StudyPlanResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM study_plan
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+        <include refid="QueryConditions"/>
+        ORDER BY plan_date DESC, created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <update id="updateByIdAndUserId">
+        UPDATE study_plan
+        SET plan_title = #{studyPlan.planTitle},
+            plan_content = #{studyPlan.planContent},
+            plan_date = #{studyPlan.planDate},
+            start_time = #{studyPlan.startTime},
+            end_time = #{studyPlan.endTime},
+            priority_level = #{studyPlan.priorityLevel},
+            remark = #{studyPlan.remark},
+            updated_at = #{studyPlan.updatedAt}
+        WHERE id = #{studyPlan.id}
+          AND user_id = #{userId}
+          AND deleted_flag = 0
+    </update>
+
+    <update id="logicalDeleteByIdAndUserId">
+        UPDATE study_plan
+        SET deleted_flag = 1,
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+          AND user_id = #{userId}
+          AND deleted_flag = 0
+    </update>
+
+    <update id="updateStatusByIdAndUserId">
+        UPDATE study_plan
+        SET plan_status = #{planStatus},
+            completion_time = #{completionTime},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+          AND user_id = #{userId}
+          AND deleted_flag = 0
+    </update>
+
+</mapper>
