@@ -15,7 +15,10 @@ public enum ResultCode {
     INTERNAL_ERROR(500, "系统内部异常"),
     USERNAME_EXISTS(10001, "用户名已存在"),
     USERNAME_OR_PASSWORD_ERROR(10002, "用户名或密码错误"),
-    ACCOUNT_DISABLED(10005, "账号已被禁用");
+    ACCOUNT_DISABLED(10005, "账号已被禁用"),
+    STUDY_PLAN_NOT_FOUND(11001, "学习计划不存在"),
+    STUDY_PLAN_NOT_BELONG_TO_USER(11002, "学习计划不属于当前用户"),
+    STUDY_PLAN_TIME_RANGE_INVALID(11003, "学习计划时间范围非法");
 
     private final int code;
 
