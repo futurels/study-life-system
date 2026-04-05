@@ -18,7 +18,11 @@ public enum ResultCode {
     ACCOUNT_DISABLED(10005, "账号已被禁用"),
     STUDY_PLAN_NOT_FOUND(11001, "学习计划不存在"),
     STUDY_PLAN_NOT_BELONG_TO_USER(11002, "学习计划不属于当前用户"),
-    STUDY_PLAN_TIME_RANGE_INVALID(11003, "学习计划时间范围非法");
+    STUDY_PLAN_TIME_RANGE_INVALID(11003, "学习计划时间范围非法"),
+    LIFE_RECORD_NOT_FOUND(12001, "生活记录不存在"),
+    LIFE_RECORD_NOT_BELONG_TO_USER(12002, "生活记录不属于当前用户"),
+    LIFE_RECORD_DATE_EXISTS(12003, "当前日期的生活记录已存在"),
+    LIFE_RECORD_DATE_RANGE_INVALID(12004, "生活记录日期范围非法");
 
     private final int code;
 

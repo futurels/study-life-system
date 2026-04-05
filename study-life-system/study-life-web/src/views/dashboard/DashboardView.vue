@@ -31,6 +31,38 @@
       <div class="placeholder-card">
         <div class="section-header">
           <div>
+            <h3>今日记录提醒</h3>
+            <p>及时补上今天的生活记录，方便后续回看与复盘。</p>
+          </div>
+          <el-button
+            :type="todayLifeRecord ? 'success' : 'primary'"
+            plain
+            @click="goLifeRecord"
+          >
+            {{ todayLifeRecord ? '已记录' : '去记录' }}
+          </el-button>
+        </div>
+
+        <div class="record-reminder-card" :class="{ filled: !!todayLifeRecord }">
+          <template v-if="todayLifeRecord">
+            <div class="record-reminder-title">
+              <el-tag :type="moodTagType(todayLifeRecord.moodStatus)" effect="plain">
+                {{ todayLifeRecord.moodStatus || '未记录心情' }}
+              </el-tag>
+              <strong>{{ sleepText(todayLifeRecord.sleepHours) }}</strong>
+            </div>
+            <p>{{ summaryText(todayLifeRecord.diaryContent) }}</p>
+          </template>
+          <template v-else>
+            <strong>今天还没有填写生活记录</strong>
+            <p>去写下一天里的心情、睡眠、饮食和运动，让首页提醒变成“已记录”。</p>
+          </template>
+        </div>
+      </div>
+
+      <div class="placeholder-card">
+        <div class="section-header">
+          <div>
             <h3>今日学习计划</h3>
             <p>展示今天的学习任务，并支持直接完成。</p>
           </div>
@@ -77,12 +109,14 @@ import { ElMessage } from 'element-plus'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 import { getStudyPlanListApi, updateStudyPlanStatusApi } from '@/api/studyPlan'
+import { getLifeRecordListApi } from '@/api/lifeRecord'
 import { getUserInfo } from '@/utils/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const loading = ref(false)
 const todayPlans = ref([])
+const todayLifeRecord = ref(null)
 
 const profile = computed(() => authStore.userInfo || getUserInfo() || {})
 const nickname = computed(() => profile.value.nickname || profile.value.username || '同学')
@@ -95,7 +129,7 @@ onMounted(async () => {
   if (!authStore.userInfo) {
     await authStore.fetchProfile()
   }
-  await loadTodayPlans()
+  await Promise.all([loadTodayPlans(), loadTodayLifeRecord()])
 })
 
 async function loadTodayPlans() {
@@ -118,8 +152,21 @@ async function handleQuickComplete(item) {
   await loadTodayPlans()
 }
 
+async function loadTodayLifeRecord() {
+  const response = await getLifeRecordListApi({
+    pageNum: 1,
+    pageSize: 1,
+    recordDate: formatDate(new Date())
+  })
+  todayLifeRecord.value = response.data.list?.[0] || null
+}
+
 function goStudyPlan() {
   router.push('/study-life/study-plan')
+}
+
+function goLifeRecord() {
+  router.push('/study-life/life-record')
 }
 
 function formatDate(date) {
@@ -150,5 +197,31 @@ function priorityTagType(value) {
 
 function statusTagType(value) {
   return ({ 0: 'info', 1: 'warning', 2: 'success', 3: 'danger' }[value] || 'info')
+}
+
+function sleepText(value) {
+  if (value === null || value === undefined || value === '') {
+    return '睡眠未记录'
+  }
+  return `睡眠 ${value}h`
+}
+
+function summaryText(text) {
+  if (!text) {
+    return '今天还没有补充生活摘要。'
+  }
+  return text.length > 90 ? `${text.slice(0, 90)}...` : text
+}
+
+function moodTagType(value) {
+  return (
+    {
+      开心: 'success',
+      平静: 'primary',
+      充实: 'warning',
+      一般: 'info',
+      疲惫: 'danger'
+    }[value] || 'info'
+  )
 }
 </script>
