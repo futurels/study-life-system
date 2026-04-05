@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sakura.studylife.mapper.StatisticsMapper">
+
+    <select id="countPlanByDateRange" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM study_plan
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+          AND plan_date <![CDATA[>=]]> #{startDate}
+          AND plan_date <![CDATA[<=]]> #{endDate}
+    </select>
+
+    <select id="countCompletedPlanByDateRange" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM study_plan
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+          AND plan_status = 2
+          AND plan_date <![CDATA[>=]]> #{startDate}
+          AND plan_date <![CDATA[<=]]> #{endDate}
+    </select>
+
+    <select id="countLifeRecordDaysByDateRange" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT record_date)
+        FROM life_record
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+          AND record_date <![CDATA[>=]]> #{startDate}
+          AND record_date <![CDATA[<=]]> #{endDate}
+    </select>
+
+    <select id="countReviewDaysByDateRange" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT review_date)
+        FROM daily_review
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+          AND review_date <![CDATA[>=]]> #{startDate}
+          AND review_date <![CDATA[<=]]> #{endDate}
+    </select>
+
+    <select id="selectPlanTrendByDateRange" resultType="com.sakura.studylife.vo.statistics.StatisticsTrendPointVo">
+        SELECT plan_date AS date,
+               COUNT(1) AS plan_count,
+               SUM(CASE WHEN plan_status = 2 THEN 1 ELSE 0 END) AS completed_plan_count
+        FROM study_plan
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+          AND plan_date <![CDATA[>=]]> #{startDate}
+          AND plan_date <![CDATA[<=]]> #{endDate}
+        GROUP BY plan_date
+        ORDER BY plan_date ASC
+    </select>
+
+    <select id="selectPlanStatusDistributionByDateRange" resultType="com.sakura.studylife.vo.statistics.StatisticsStatusDistributionVo">
+        SELECT plan_status,
+               COUNT(1) AS count
+        FROM study_plan
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+          AND plan_date <![CDATA[>=]]> #{startDate}
+          AND plan_date <![CDATA[<=]]> #{endDate}
+        GROUP BY plan_status
+        ORDER BY plan_status ASC
+    </select>
+
+    <select id="selectCompletedPlanTrendByDateRange" resultType="com.sakura.studylife.vo.statistics.StatisticsTrendPointVo">
+        SELECT plan_date AS date,
+               COUNT(1) AS plan_count,
+               SUM(CASE WHEN plan_status = 2 THEN 1 ELSE 0 END) AS completed_plan_count
+        FROM study_plan
+        WHERE user_id = #{userId}
+          AND deleted_flag = 0
+          AND plan_date <![CDATA[>=]]> #{startDate}
+          AND plan_date <![CDATA[<=]]> #{endDate}
+        GROUP BY plan_date
+        ORDER BY plan_date ASC
+    </select>
+
+</mapper>

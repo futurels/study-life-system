@@ -12,19 +12,27 @@
       <div class="info-grid dashboard-metrics">
         <div class="info-card">
           <span class="info-title">今日任务数</span>
-          <strong>{{ todayPlans.length }}</strong>
+          <strong>{{ overview.todayPlanCount }}</strong>
         </div>
         <div class="info-card">
           <span class="info-title">今日已完成</span>
-          <strong>{{ completedCount }}</strong>
+          <strong>{{ overview.todayCompletedPlanCount }}</strong>
         </div>
         <div class="info-card">
-          <span class="info-title">进行中</span>
-          <strong>{{ processingCount }}</strong>
+          <span class="info-title">今日完成率</span>
+          <strong>{{ percentText(overview.todayCompletionRate) }}</strong>
         </div>
         <div class="info-card">
-          <span class="info-title">未开始</span>
-          <strong>{{ pendingCount }}</strong>
+          <span class="info-title">本周完成率</span>
+          <strong>{{ percentText(overview.thisWeekCompletionRate) }}</strong>
+        </div>
+        <div class="info-card">
+          <span class="info-title">本月生活记录</span>
+          <strong>{{ overview.thisMonthLifeRecordDays }}</strong>
+        </div>
+        <div class="info-card">
+          <span class="info-title">本月复盘天数</span>
+          <strong>{{ overview.thisMonthReviewDays }}</strong>
         </div>
       </div>
 
@@ -57,6 +65,66 @@
             <strong>今天还没有填写生活记录</strong>
             <p>去写下一天里的心情、睡眠、饮食和运动，让首页提醒变成“已记录”。</p>
           </template>
+        </div>
+      </div>
+
+      <div class="placeholder-card">
+        <div class="section-header">
+          <div>
+            <h3>今日复盘提醒</h3>
+            <p>当天的总结和明日计划写下来，第二天会更有方向感。</p>
+          </div>
+          <el-button
+            :type="todayDailyReview ? 'success' : 'primary'"
+            plain
+            @click="goDailyReview"
+          >
+            {{ todayDailyReview ? '已复盘' : '去复盘' }}
+          </el-button>
+        </div>
+
+        <div class="record-reminder-card" :class="{ filled: !!todayDailyReview }">
+          <template v-if="todayDailyReview">
+            <div class="record-reminder-title">
+              <el-tag :type="scoreTagType(todayDailyReview.reviewScore)" effect="dark">
+                {{ reviewScoreText(todayDailyReview.reviewScore) }}
+              </el-tag>
+            </div>
+            <p>{{ reviewSummaryText(todayDailyReview.overallEvaluation || todayDailyReview.completedItems) }}</p>
+          </template>
+          <template v-else>
+            <strong>今天还没有填写每日复盘</strong>
+            <p>去总结今天的完成情况、反思未完成原因，并把明天的计划先写下来。</p>
+          </template>
+        </div>
+      </div>
+
+      <div class="placeholder-card">
+        <div class="section-header">
+          <div>
+            <h3>统计概览</h3>
+            <p>查看本周任务完成情况，以及本月记录与复盘天数。</p>
+          </div>
+          <el-button type="primary" plain @click="goStatistics">进入统计分析页</el-button>
+        </div>
+
+        <div class="dashboard-overview-list">
+          <div class="overview-row">
+            <span>本周计划总数</span>
+            <strong>{{ overview.thisWeekPlanCount }}</strong>
+          </div>
+          <div class="overview-row">
+            <span>本周已完成任务</span>
+            <strong>{{ overview.thisWeekCompletedPlanCount }}</strong>
+          </div>
+          <div class="overview-row">
+            <span>本月生活记录天数</span>
+            <strong>{{ overview.thisMonthLifeRecordDays }}</strong>
+          </div>
+          <div class="overview-row">
+            <span>本月复盘天数</span>
+            <strong>{{ overview.thisMonthReviewDays }}</strong>
+          </div>
         </div>
       </div>
 
@@ -110,6 +178,8 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 import { getStudyPlanListApi, updateStudyPlanStatusApi } from '@/api/studyPlan'
 import { getLifeRecordListApi } from '@/api/lifeRecord'
+import { getDailyReviewListApi } from '@/api/dailyReview'
+import { getStatisticsOverviewApi } from '@/api/statistics'
 import { getUserInfo } from '@/utils/auth'
 
 const router = useRouter()
@@ -117,19 +187,26 @@ const authStore = useAuthStore()
 const loading = ref(false)
 const todayPlans = ref([])
 const todayLifeRecord = ref(null)
+const todayDailyReview = ref(null)
+const overview = ref({
+  todayPlanCount: 0,
+  todayCompletedPlanCount: 0,
+  todayCompletionRate: 0,
+  thisWeekPlanCount: 0,
+  thisWeekCompletedPlanCount: 0,
+  thisWeekCompletionRate: 0,
+  thisMonthLifeRecordDays: 0,
+  thisMonthReviewDays: 0
+})
 
 const profile = computed(() => authStore.userInfo || getUserInfo() || {})
 const nickname = computed(() => profile.value.nickname || profile.value.username || '同学')
-
-const completedCount = computed(() => todayPlans.value.filter((item) => item.planStatus === 2).length)
-const processingCount = computed(() => todayPlans.value.filter((item) => item.planStatus === 1).length)
-const pendingCount = computed(() => todayPlans.value.filter((item) => item.planStatus === 0).length)
 
 onMounted(async () => {
   if (!authStore.userInfo) {
     await authStore.fetchProfile()
   }
-  await Promise.all([loadTodayPlans(), loadTodayLifeRecord()])
+  await Promise.all([loadOverview(), loadTodayPlans(), loadTodayLifeRecord(), loadTodayDailyReview()])
 })
 
 async function loadTodayPlans() {
@@ -149,7 +226,12 @@ async function loadTodayPlans() {
 async function handleQuickComplete(item) {
   await updateStudyPlanStatusApi(item.id, { planStatus: 2 })
   ElMessage.success('任务已标记为完成')
-  await loadTodayPlans()
+  await Promise.all([loadTodayPlans(), loadOverview()])
+}
+
+async function loadOverview() {
+  const response = await getStatisticsOverviewApi()
+  overview.value = response.data || overview.value
 }
 
 async function loadTodayLifeRecord() {
@@ -161,12 +243,29 @@ async function loadTodayLifeRecord() {
   todayLifeRecord.value = response.data.list?.[0] || null
 }
 
+async function loadTodayDailyReview() {
+  const response = await getDailyReviewListApi({
+    pageNum: 1,
+    pageSize: 1,
+    reviewDate: formatDate(new Date())
+  })
+  todayDailyReview.value = response.data.list?.[0] || null
+}
+
 function goStudyPlan() {
   router.push('/study-life/study-plan')
 }
 
 function goLifeRecord() {
   router.push('/study-life/life-record')
+}
+
+function goDailyReview() {
+  router.push('/study-life/daily-review')
+}
+
+function goStatistics() {
+  router.push('/study-life/statistics')
 }
 
 function formatDate(date) {
@@ -223,5 +322,36 @@ function moodTagType(value) {
       疲惫: 'danger'
     }[value] || 'info'
   )
+}
+
+function reviewScoreText(value) {
+  if (value === null || value === undefined || value === '') {
+    return '未评分'
+  }
+  return `评分 ${value} 分`
+}
+
+function reviewSummaryText(text) {
+  if (!text) {
+    return '今天已完成复盘，可以随时进入页面补充更完整的总结。'
+  }
+  return text.length > 90 ? `${text.slice(0, 90)}...` : text
+}
+
+function scoreTagType(value) {
+  if (value === null || value === undefined) {
+    return 'info'
+  }
+  if (value >= 8) {
+    return 'success'
+  }
+  if (value >= 6) {
+    return 'warning'
+  }
+  return 'danger'
+}
+
+function percentText(value) {
+  return `${Number(value || 0).toFixed(2)}%`
 }
 </script>

@@ -180,7 +180,9 @@ a {
 
 .dashboard-shell,
 .study-plan-page,
-.life-record-page {
+.life-record-page,
+.daily-review-page,
+.statistics-page {
   display: grid;
   gap: 20px;
 }
@@ -199,6 +201,10 @@ a {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
+}
+
+.statistics-metrics {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .info-title {
@@ -224,6 +230,22 @@ a {
 .today-plan-list {
   display: grid;
   gap: 14px;
+}
+
+.dashboard-overview-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.overview-row {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(244, 247, 250, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .record-reminder-card {
@@ -281,11 +303,23 @@ a {
   gap: 16px;
 }
 
+.daily-review-card-list {
+  display: grid;
+  gap: 16px;
+}
+
 .life-record-card {
   padding: 20px;
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(242, 246, 250, 0.92));
   border: 1px solid rgba(209, 220, 232, 0.72);
+}
+
+.daily-review-card {
+  padding: 22px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(251, 248, 242, 0.98), rgba(245, 240, 233, 0.94));
+  border: 1px solid rgba(222, 210, 194, 0.76);
 }
 
 .life-record-card-header {
@@ -295,7 +329,19 @@ a {
   gap: 16px;
 }
 
+.daily-review-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .life-record-card-header h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.daily-review-card-header h3 {
   margin: 0 0 10px;
   font-size: 20px;
 }
@@ -314,10 +360,46 @@ a {
   gap: 8px;
 }
 
+.daily-review-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .life-record-summary {
   margin: 18px 0 0;
   color: #233140;
   line-height: 1.8;
+}
+
+.daily-review-content-block {
+  margin-top: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.daily-review-line {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.daily-review-line span {
+  display: block;
+  margin-bottom: 8px;
+  color: #6b6a62;
+  font-size: 13px;
+}
+
+.daily-review-line p {
+  margin: 0;
+  color: #28313d;
+  line-height: 1.8;
+}
+
+.daily-review-score {
+  display: flex;
+  align-items: center;
 }
 
 .life-record-extra {
@@ -349,6 +431,216 @@ a {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+.statistics-range-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.range-chip {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: rgba(19, 33, 45, 0.08);
+  color: #223141;
+  font: inherit;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.range-chip.active,
+.range-chip:hover {
+  background: #13212d;
+  color: #fff7ee;
+}
+
+.statistics-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.chart-panel:last-child {
+  grid-column: 1 / -1;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 12px;
+  color: #5f6f7f;
+  font-size: 13px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.legend-dot.total {
+  background: #f08b38;
+}
+
+.legend-dot.done {
+  background: #2f9f6b;
+}
+
+.line-chart {
+  width: 100%;
+  height: 260px;
+}
+
+.chart-grid-line {
+  stroke: rgba(118, 138, 157, 0.18);
+  stroke-width: 1;
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 3;
+}
+
+.chart-line.total,
+.chart-point.total {
+  stroke: #f08b38;
+  fill: #f08b38;
+}
+
+.chart-line.done,
+.chart-point.done {
+  stroke: #2f9f6b;
+  fill: #2f9f6b;
+}
+
+.chart-label {
+  fill: #6a7785;
+  font-size: 12px;
+}
+
+.distribution-list {
+  display: grid;
+  gap: 16px;
+}
+
+.distribution-row {
+  display: grid;
+  gap: 8px;
+}
+
+.distribution-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.distribution-track {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(210, 220, 231, 0.58);
+  overflow: hidden;
+}
+
+.distribution-fill {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.distribution-fill.pending {
+  background: #8ea2b5;
+}
+
+.distribution-fill.processing {
+  background: #d79833;
+}
+
+.distribution-fill.completed {
+  background: #3d9f73;
+}
+
+.distribution-fill.canceled {
+  background: #cb6653;
+}
+
+.monthly-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 56px;
+  min-height: 240px;
+}
+
+.monthly-bar-item {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.monthly-bar-track {
+  width: 76px;
+  height: 180px;
+  border-radius: 20px 20px 12px 12px;
+  background: rgba(236, 239, 243, 0.92);
+  display: flex;
+  align-items: flex-end;
+  padding: 8px;
+}
+
+.monthly-bar-fill {
+  width: 100%;
+  border-radius: 14px;
+}
+
+.monthly-bar-fill.life {
+  background: linear-gradient(180deg, #5ca3ff, #2f6fd4);
+}
+
+.monthly-bar-fill.review {
+  background: linear-gradient(180deg, #f7b05a, #df7b24);
+}
+
+.mini-trend {
+  margin-top: 24px;
+}
+
+.mini-trend-header {
+  margin-bottom: 14px;
+  color: #5f6f7f;
+  font-size: 14px;
+}
+
+.mini-trend-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.mini-trend-item {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.mini-trend-track {
+  width: 100%;
+  height: 92px;
+  background: rgba(238, 242, 247, 0.88);
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-end;
+  padding: 4px;
+}
+
+.mini-trend-fill {
+  width: 100%;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #63be8b, #2f9f6b);
 }
 
 .detail-grid {
@@ -390,7 +682,9 @@ a {
   .login-panel,
   .app-layout,
   .info-grid,
-  .detail-grid {
+  .detail-grid,
+  .statistics-chart-grid,
+  .dashboard-overview-list {
     grid-template-columns: 1fr;
   }
 
@@ -401,12 +695,22 @@ a {
   .today-plan-item,
   .section-header,
   .life-record-card-header,
-  .life-record-actions {
+  .life-record-actions,
+  .daily-review-card-header,
+  .daily-review-actions {
     align-items: flex-start;
     flex-direction: column;
   }
 
   .life-record-extra {
     grid-template-columns: 1fr;
+  }
+
+  .statistics-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .monthly-bars {
+    gap: 24px;
   }
 }
