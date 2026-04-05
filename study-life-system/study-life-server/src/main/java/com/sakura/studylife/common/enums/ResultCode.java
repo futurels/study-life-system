@@ -26,7 +26,8 @@ public enum ResultCode {
     DAILY_REVIEW_NOT_FOUND(13001, "每日复盘不存在"),
     DAILY_REVIEW_NOT_BELONG_TO_USER(13002, "每日复盘不属于当前用户"),
     DAILY_REVIEW_DATE_EXISTS(13003, "当前日期的每日复盘已存在"),
-    DAILY_REVIEW_DATE_RANGE_INVALID(13004, "每日复盘日期范围非法");
+    DAILY_REVIEW_DATE_RANGE_INVALID(13004, "每日复盘日期范围非法"),
+    STATISTICS_DATE_RANGE_INVALID(14001, "统计日期范围非法");
 
     private final int code;
 

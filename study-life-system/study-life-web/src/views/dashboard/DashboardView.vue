@@ -12,19 +12,27 @@
       <div class="info-grid dashboard-metrics">
         <div class="info-card">
           <span class="info-title">今日任务数</span>
-          <strong>{{ todayPlans.length }}</strong>
+          <strong>{{ overview.todayPlanCount }}</strong>
         </div>
         <div class="info-card">
           <span class="info-title">今日已完成</span>
-          <strong>{{ completedCount }}</strong>
+          <strong>{{ overview.todayCompletedPlanCount }}</strong>
         </div>
         <div class="info-card">
-          <span class="info-title">进行中</span>
-          <strong>{{ processingCount }}</strong>
+          <span class="info-title">今日完成率</span>
+          <strong>{{ percentText(overview.todayCompletionRate) }}</strong>
         </div>
         <div class="info-card">
-          <span class="info-title">未开始</span>
-          <strong>{{ pendingCount }}</strong>
+          <span class="info-title">本周完成率</span>
+          <strong>{{ percentText(overview.thisWeekCompletionRate) }}</strong>
+        </div>
+        <div class="info-card">
+          <span class="info-title">本月生活记录</span>
+          <strong>{{ overview.thisMonthLifeRecordDays }}</strong>
+        </div>
+        <div class="info-card">
+          <span class="info-title">本月复盘天数</span>
+          <strong>{{ overview.thisMonthReviewDays }}</strong>
         </div>
       </div>
 
@@ -94,6 +102,35 @@
       <div class="placeholder-card">
         <div class="section-header">
           <div>
+            <h3>统计概览</h3>
+            <p>查看本周任务完成情况，以及本月记录与复盘天数。</p>
+          </div>
+          <el-button type="primary" plain @click="goStatistics">进入统计分析页</el-button>
+        </div>
+
+        <div class="dashboard-overview-list">
+          <div class="overview-row">
+            <span>本周计划总数</span>
+            <strong>{{ overview.thisWeekPlanCount }}</strong>
+          </div>
+          <div class="overview-row">
+            <span>本周已完成任务</span>
+            <strong>{{ overview.thisWeekCompletedPlanCount }}</strong>
+          </div>
+          <div class="overview-row">
+            <span>本月生活记录天数</span>
+            <strong>{{ overview.thisMonthLifeRecordDays }}</strong>
+          </div>
+          <div class="overview-row">
+            <span>本月复盘天数</span>
+            <strong>{{ overview.thisMonthReviewDays }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="placeholder-card">
+        <div class="section-header">
+          <div>
             <h3>今日学习计划</h3>
             <p>展示今天的学习任务，并支持直接完成。</p>
           </div>
@@ -142,6 +179,7 @@ import { useAuthStore } from '@/stores/auth'
 import { getStudyPlanListApi, updateStudyPlanStatusApi } from '@/api/studyPlan'
 import { getLifeRecordListApi } from '@/api/lifeRecord'
 import { getDailyReviewListApi } from '@/api/dailyReview'
+import { getStatisticsOverviewApi } from '@/api/statistics'
 import { getUserInfo } from '@/utils/auth'
 
 const router = useRouter()
@@ -150,19 +188,25 @@ const loading = ref(false)
 const todayPlans = ref([])
 const todayLifeRecord = ref(null)
 const todayDailyReview = ref(null)
+const overview = ref({
+  todayPlanCount: 0,
+  todayCompletedPlanCount: 0,
+  todayCompletionRate: 0,
+  thisWeekPlanCount: 0,
+  thisWeekCompletedPlanCount: 0,
+  thisWeekCompletionRate: 0,
+  thisMonthLifeRecordDays: 0,
+  thisMonthReviewDays: 0
+})
 
 const profile = computed(() => authStore.userInfo || getUserInfo() || {})
 const nickname = computed(() => profile.value.nickname || profile.value.username || '同学')
-
-const completedCount = computed(() => todayPlans.value.filter((item) => item.planStatus === 2).length)
-const processingCount = computed(() => todayPlans.value.filter((item) => item.planStatus === 1).length)
-const pendingCount = computed(() => todayPlans.value.filter((item) => item.planStatus === 0).length)
 
 onMounted(async () => {
   if (!authStore.userInfo) {
     await authStore.fetchProfile()
   }
-  await Promise.all([loadTodayPlans(), loadTodayLifeRecord(), loadTodayDailyReview()])
+  await Promise.all([loadOverview(), loadTodayPlans(), loadTodayLifeRecord(), loadTodayDailyReview()])
 })
 
 async function loadTodayPlans() {
@@ -182,7 +226,12 @@ async function loadTodayPlans() {
 async function handleQuickComplete(item) {
   await updateStudyPlanStatusApi(item.id, { planStatus: 2 })
   ElMessage.success('任务已标记为完成')
-  await loadTodayPlans()
+  await Promise.all([loadTodayPlans(), loadOverview()])
+}
+
+async function loadOverview() {
+  const response = await getStatisticsOverviewApi()
+  overview.value = response.data || overview.value
 }
 
 async function loadTodayLifeRecord() {
@@ -213,6 +262,10 @@ function goLifeRecord() {
 
 function goDailyReview() {
   router.push('/study-life/daily-review')
+}
+
+function goStatistics() {
+  router.push('/study-life/statistics')
 }
 
 function formatDate(date) {
@@ -296,5 +349,9 @@ function scoreTagType(value) {
     return 'warning'
   }
   return 'danger'
+}
+
+function percentText(value) {
+  return `${Number(value || 0).toFixed(2)}%`
 }
 </script>
