@@ -29,6 +29,12 @@ const routes = [
     name: 'life-record',
     component: () => import('@/views/life-record/LifeRecordView.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/study-life/daily-review',
+    name: 'daily-review',
+    component: () => import('@/views/daily-review/DailyReviewView.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

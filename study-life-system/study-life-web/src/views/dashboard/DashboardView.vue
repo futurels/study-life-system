@@ -63,6 +63,37 @@
       <div class="placeholder-card">
         <div class="section-header">
           <div>
+            <h3>今日复盘提醒</h3>
+            <p>当天的总结和明日计划写下来，第二天会更有方向感。</p>
+          </div>
+          <el-button
+            :type="todayDailyReview ? 'success' : 'primary'"
+            plain
+            @click="goDailyReview"
+          >
+            {{ todayDailyReview ? '已复盘' : '去复盘' }}
+          </el-button>
+        </div>
+
+        <div class="record-reminder-card" :class="{ filled: !!todayDailyReview }">
+          <template v-if="todayDailyReview">
+            <div class="record-reminder-title">
+              <el-tag :type="scoreTagType(todayDailyReview.reviewScore)" effect="dark">
+                {{ reviewScoreText(todayDailyReview.reviewScore) }}
+              </el-tag>
+            </div>
+            <p>{{ reviewSummaryText(todayDailyReview.overallEvaluation || todayDailyReview.completedItems) }}</p>
+          </template>
+          <template v-else>
+            <strong>今天还没有填写每日复盘</strong>
+            <p>去总结今天的完成情况、反思未完成原因，并把明天的计划先写下来。</p>
+          </template>
+        </div>
+      </div>
+
+      <div class="placeholder-card">
+        <div class="section-header">
+          <div>
             <h3>今日学习计划</h3>
             <p>展示今天的学习任务，并支持直接完成。</p>
           </div>
@@ -110,6 +141,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 import { getStudyPlanListApi, updateStudyPlanStatusApi } from '@/api/studyPlan'
 import { getLifeRecordListApi } from '@/api/lifeRecord'
+import { getDailyReviewListApi } from '@/api/dailyReview'
 import { getUserInfo } from '@/utils/auth'
 
 const router = useRouter()
@@ -117,6 +149,7 @@ const authStore = useAuthStore()
 const loading = ref(false)
 const todayPlans = ref([])
 const todayLifeRecord = ref(null)
+const todayDailyReview = ref(null)
 
 const profile = computed(() => authStore.userInfo || getUserInfo() || {})
 const nickname = computed(() => profile.value.nickname || profile.value.username || '同学')
@@ -129,7 +162,7 @@ onMounted(async () => {
   if (!authStore.userInfo) {
     await authStore.fetchProfile()
   }
-  await Promise.all([loadTodayPlans(), loadTodayLifeRecord()])
+  await Promise.all([loadTodayPlans(), loadTodayLifeRecord(), loadTodayDailyReview()])
 })
 
 async function loadTodayPlans() {
@@ -161,12 +194,25 @@ async function loadTodayLifeRecord() {
   todayLifeRecord.value = response.data.list?.[0] || null
 }
 
+async function loadTodayDailyReview() {
+  const response = await getDailyReviewListApi({
+    pageNum: 1,
+    pageSize: 1,
+    reviewDate: formatDate(new Date())
+  })
+  todayDailyReview.value = response.data.list?.[0] || null
+}
+
 function goStudyPlan() {
   router.push('/study-life/study-plan')
 }
 
 function goLifeRecord() {
   router.push('/study-life/life-record')
+}
+
+function goDailyReview() {
+  router.push('/study-life/daily-review')
 }
 
 function formatDate(date) {
@@ -223,5 +269,32 @@ function moodTagType(value) {
       疲惫: 'danger'
     }[value] || 'info'
   )
+}
+
+function reviewScoreText(value) {
+  if (value === null || value === undefined || value === '') {
+    return '未评分'
+  }
+  return `评分 ${value} 分`
+}
+
+function reviewSummaryText(text) {
+  if (!text) {
+    return '今天已完成复盘，可以随时进入页面补充更完整的总结。'
+  }
+  return text.length > 90 ? `${text.slice(0, 90)}...` : text
+}
+
+function scoreTagType(value) {
+  if (value === null || value === undefined) {
+    return 'info'
+  }
+  if (value >= 8) {
+    return 'success'
+  }
+  if (value >= 6) {
+    return 'warning'
+  }
+  return 'danger'
 }
 </script>

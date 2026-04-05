@@ -22,7 +22,11 @@ public enum ResultCode {
     LIFE_RECORD_NOT_FOUND(12001, "生活记录不存在"),
     LIFE_RECORD_NOT_BELONG_TO_USER(12002, "生活记录不属于当前用户"),
     LIFE_RECORD_DATE_EXISTS(12003, "当前日期的生活记录已存在"),
-    LIFE_RECORD_DATE_RANGE_INVALID(12004, "生活记录日期范围非法");
+    LIFE_RECORD_DATE_RANGE_INVALID(12004, "生活记录日期范围非法"),
+    DAILY_REVIEW_NOT_FOUND(13001, "每日复盘不存在"),
+    DAILY_REVIEW_NOT_BELONG_TO_USER(13002, "每日复盘不属于当前用户"),
+    DAILY_REVIEW_DATE_EXISTS(13003, "当前日期的每日复盘已存在"),
+    DAILY_REVIEW_DATE_RANGE_INVALID(13004, "每日复盘日期范围非法");
 
     private final int code;
 

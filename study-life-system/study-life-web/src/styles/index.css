@@ -180,7 +180,8 @@ a {
 
 .dashboard-shell,
 .study-plan-page,
-.life-record-page {
+.life-record-page,
+.daily-review-page {
   display: grid;
   gap: 20px;
 }
@@ -281,11 +282,23 @@ a {
   gap: 16px;
 }
 
+.daily-review-card-list {
+  display: grid;
+  gap: 16px;
+}
+
 .life-record-card {
   padding: 20px;
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(242, 246, 250, 0.92));
   border: 1px solid rgba(209, 220, 232, 0.72);
+}
+
+.daily-review-card {
+  padding: 22px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(251, 248, 242, 0.98), rgba(245, 240, 233, 0.94));
+  border: 1px solid rgba(222, 210, 194, 0.76);
 }
 
 .life-record-card-header {
@@ -295,7 +308,19 @@ a {
   gap: 16px;
 }
 
+.daily-review-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .life-record-card-header h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.daily-review-card-header h3 {
   margin: 0 0 10px;
   font-size: 20px;
 }
@@ -314,10 +339,46 @@ a {
   gap: 8px;
 }
 
+.daily-review-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .life-record-summary {
   margin: 18px 0 0;
   color: #233140;
   line-height: 1.8;
+}
+
+.daily-review-content-block {
+  margin-top: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.daily-review-line {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.daily-review-line span {
+  display: block;
+  margin-bottom: 8px;
+  color: #6b6a62;
+  font-size: 13px;
+}
+
+.daily-review-line p {
+  margin: 0;
+  color: #28313d;
+  line-height: 1.8;
+}
+
+.daily-review-score {
+  display: flex;
+  align-items: center;
 }
 
 .life-record-extra {
@@ -401,7 +462,9 @@ a {
   .today-plan-item,
   .section-header,
   .life-record-card-header,
-  .life-record-actions {
+  .life-record-actions,
+  .daily-review-card-header,
+  .daily-review-actions {
     align-items: flex-start;
     flex-direction: column;
   }
