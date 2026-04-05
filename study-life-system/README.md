@@ -17,6 +17,26 @@
 - 登录页
 - 登录成功后的首页框架页
 
+## 第二阶段范围
+
+第二阶段已完成学习计划模块：
+
+- `study_plan` 表及相关 SQL
+- 学习计划后端 MVC 三层
+- 学习计划前端页面
+- 首页“今日学习计划概览”真实接口接入
+
+## 第三阶段范围
+
+第三阶段聚焦生活记录模块：
+
+- `life_record` 表落库
+- 生活记录后端 MVC 三层
+- 生活记录前端页面
+- 首页“今日记录提醒”真实接口接入
+- Swagger 文档补充
+- 前后端联调与 README 说明补充
+
 ## 目录说明
 
 - `study-life-server`：Spring Boot 后端
@@ -25,10 +45,16 @@
 
 ## 数据库初始化
 
-1. 创建数据库并执行初始化脚本：
+1. 创建数据库并执行第一阶段初始化脚本：
 
 ```sql
 source study-life-server/src/main/resources/db/init.sql;
+```
+
+2. 执行第三阶段生活记录表脚本：
+
+```sql
+source study-life-server/src/main/resources/db/phase-3-life-record.sql;
 ```
 
 2. 默认数据库连接配置位于：
@@ -78,28 +104,57 @@ npm run dev
 http://localhost:5173/study-life/login
 ```
 
-## 联调说明
+## 第三阶段启动与联调说明
 
-1. 先启动 MySQL，并执行 `init.sql`
-2. 启动后端 `study-life-server`
-3. 启动前端 `study-life-web`
-4. 注册接口：`POST /api/auth/register`
-5. 登录接口：`POST /api/auth/login`
-6. 前端登录成功后会将 `accessToken` 保存到 `localStorage`
-7. 后续请求会自动携带：
+1. 先启动 MySQL，并依次执行：
+
+```sql
+source study-life-server/src/main/resources/db/init.sql;
+source study-life-server/src/main/resources/db/phase-3-life-record.sql;
+```
+
+2. 启动后端：
+
+```bash
+cd study-life-server
+mvn spring-boot:run
+```
+
+3. 启动前端：
+
+```bash
+cd study-life-web
+npm install
+npm run dev
+```
+
+4. 先登录获取令牌：`POST /api/auth/login`
+5. 访问生活记录接口时统一携带：
 
 ```http
 Authorization: Bearer <token>
 ```
 
-8. 首页加载时会调用：
+6. 生活记录接口：
 
-```text
-GET /api/user/profile
-```
+- `POST /api/life-record`
+- `GET /api/life-record/list`
+- `GET /api/life-record/{id}`
+- `PUT /api/life-record/{id}`
+- `DELETE /api/life-record/{id}`
+
+7. 首页会调用生活记录列表接口查询今天是否已记录，并展示“去记录”或“已记录”状态。
+
+## 第三阶段测试提示
+
+- 同一用户同一天重复创建生活记录，应返回业务错误
+- `sleepHours` 为空允许，不为空时必须在 `0.0 ~ 24.0`
+- 修改记录日期时，若目标日期已存在记录，应返回业务错误
+- 删除后列表默认不再返回该条记录
+- 首页“今日记录提醒”应与当天真实记录状态一致
 
 ## 说明
 
 - 所有 SQL 均写在 `Mapper.xml`
-- 当前阶段未实现学习计划、生活记录、每日复盘、统计分析完整模块
-- 当前环境内未安装 Node.js，因此本次提交未在本机执行前端安装与构建验证；后端已完成 Maven 编译验证
+- 已完成注册登录、学习计划、生活记录三个阶段的最小可运行能力
+- 每日复盘、统计分析、图片上传、提醒通知等扩展能力尚未实现

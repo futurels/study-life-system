@@ -23,6 +23,12 @@ const routes = [
     name: 'study-plan',
     component: () => import('@/views/study-plan/StudyPlanView.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/study-life/life-record',
+    name: 'life-record',
+    component: () => import('@/views/life-record/LifeRecordView.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

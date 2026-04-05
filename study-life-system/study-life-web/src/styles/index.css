@@ -179,7 +179,8 @@ a {
 }
 
 .dashboard-shell,
-.study-plan-page {
+.study-plan-page,
+.life-record-page {
   display: grid;
   gap: 20px;
 }
@@ -225,6 +226,23 @@ a {
   gap: 14px;
 }
 
+.record-reminder-card {
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: rgba(244, 247, 250, 0.92);
+}
+
+.record-reminder-card.filled {
+  background: linear-gradient(135deg, rgba(233, 247, 240, 0.95), rgba(244, 250, 255, 0.95));
+}
+
+.record-reminder-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
 .today-plan-item {
   padding: 16px 18px;
   border-radius: 18px;
@@ -256,6 +274,75 @@ a {
 
 .study-plan-table {
   width: 100%;
+}
+
+.life-record-card-list {
+  display: grid;
+  gap: 16px;
+}
+
+.life-record-card {
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(242, 246, 250, 0.92));
+  border: 1px solid rgba(209, 220, 232, 0.72);
+}
+
+.life-record-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.life-record-card-header h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.life-record-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #607080;
+  font-size: 14px;
+}
+
+.life-record-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.life-record-summary {
+  margin: 18px 0 0;
+  color: #233140;
+  line-height: 1.8;
+}
+
+.life-record-extra {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.life-record-extra-item {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.life-record-extra-item span {
+  display: block;
+  margin-bottom: 8px;
+  color: #637384;
+  font-size: 13px;
+}
+
+.life-record-extra-item strong {
+  font-weight: 600;
+  color: #223141;
 }
 
 .pagination-bar {
@@ -312,8 +399,14 @@ a {
   }
 
   .today-plan-item,
-  .section-header {
+  .section-header,
+  .life-record-card-header,
+  .life-record-actions {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .life-record-extra {
+    grid-template-columns: 1fr;
   }
 }

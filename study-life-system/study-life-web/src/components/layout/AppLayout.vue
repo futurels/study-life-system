@@ -51,7 +51,8 @@ const authStore = useAuthStore()
 
 const navItems = [
   { path: '/study-life/dashboard', label: '首页' },
-  { path: '/study-life/study-plan', label: '学习计划' }
+  { path: '/study-life/study-plan', label: '学习计划' },
+  { path: '/study-life/life-record', label: '生活记录' }
 ]
 
 const displayName = computed(() => {
